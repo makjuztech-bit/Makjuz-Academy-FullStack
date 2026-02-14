@@ -26,6 +26,18 @@ const Navbar: React.FC = () => {
   const menuItems = [
     { key: "/", label: "Home" },
     { key: "/courses", label: "Courses" },
+    {
+      key: "programs",
+      label: "Programs",
+      isDropdown: true,
+      children: [
+        { key: '/certificates', label: "Certificates" },
+        { key: '/internships', label: "Internships" },
+        { key: '/projects', label: "Project Hub" },
+        { key: '/placement', label: "Placement" },
+      ]
+    },
+    { key: "/placement", label: "Jobs" },
     { key: "/about", label: "About" },
     { key: "/mock", label: "Mock" },
     { key: "/contact", label: "Contact" },
@@ -61,13 +73,12 @@ const Navbar: React.FC = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled
-          ? isDarkMode
-            ? "bg-[#1A0033]/90 backdrop-blur-xl border-b border-purple-500/30"
-            : "bg-white/90 backdrop-blur-xl border-b border-purple-200/30"
-          : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+        ? isDarkMode
+          ? "bg-[#1A0033]/90 backdrop-blur-xl border-b border-purple-500/30"
+          : "bg-white/90 backdrop-blur-xl border-b border-purple-200/30"
+        : "bg-transparent"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -87,39 +98,93 @@ const Navbar: React.FC = () => {
             </Link>
           </motion.div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* Desktop Menu - Items */}
+          <div className={`hidden md:flex items-center space-x-2 lg:space-x-6 ${user ? "absolute left-1/2 transform -translate-x-1/2" : ""}`}>
             {menuItems.map((item) => (
               <motion.div
                 key={item.key}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link
-                  to={item.key}
-                  className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                    location.pathname === item.key
+                {item.key === 'programs' ? (
+                  <Dropdown
+                    dropdownRender={() => (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        className={`mt-2 w-64 rounded-2xl shadow-2xl p-2 border backdrop-blur-xl ${isDarkMode
+                          ? "bg-[#1A0033]/95 border-purple-500/30"
+                          : "bg-white/95 border-violet-100"
+                          }`}
+                      >
+                        {item.children?.map((sub, idx) => (
+                          <Link to={sub.key} key={sub.key}>
+                            <motion.div
+                              whileHover={{ x: 5 }}
+                              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all mb-1 ${isDarkMode
+                                ? "hover:bg-purple-500/20 text-gray-200 hover:text-white"
+                                : "hover:bg-violet-50 text-gray-700 hover:text-violet-700"
+                                }`}
+                            >
+                              {/* Icon placeholder or dot */}
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDarkMode ? "bg-purple-500/20 text-purple-300" : "bg-violet-100 text-violet-600"
+                                }`}>
+                                {idx === 0 && <span className="text-lg">🏆</span>} {/* Certificates */}
+                                {idx === 1 && <span className="text-lg">💼</span>} {/* Internships */}
+                                {idx === 2 && <span className="text-lg">🚀</span>} {/* Projects */}
+                                {idx === 3 && <span className="text-lg">🎯</span>} {/* Placement */}
+                              </div>
+                              <div>
+                                <div className="font-semibold">{sub.label}</div>
+                                <div className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                                  {idx === 0 && "Earn credentials"}
+                                  {idx === 1 && "Gain experience"}
+                                  {idx === 2 && "Build portfolio"}
+                                  {idx === 3 && "Get hired"}
+                                </div>
+                              </div>
+                            </motion.div>
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  >
+                    <div className={`relative px-2 lg:px-3 py-2 font-medium text-sm lg:text-base transition-all duration-300 group cursor-pointer ${isDarkMode
+                      ? "text-gray-300 hover:text-purple-400"
+                      : "text-gray-700 hover:text-violet-600"
+                      }`}>
+                      {item.label}
+                    </div>
+                  </Dropdown>
+                ) : (
+                  <Link
+                    to={item.key}
+                    className={`relative px-2 lg:px-3 py-2 font-medium text-sm lg:text-base transition-all duration-300 group ${location.pathname === item.key
                       ? isDarkMode
                         ? "text-purple-400"
                         : "text-violet-600"
                       : isDarkMode
-                      ? "text-gray-300 hover:text-purple-400"
-                      : "text-gray-700 hover:text-violet-600"
-                  }`}
-                >
-                  {item.label}
-                  {location.pathname === item.key && (
-                    <motion.span
-                      layoutId="activeNavItem"
-                      className="absolute left-0 bottom-0 w-full h-0.5 bg-gradient-to-r from-violet-600 to-purple-700"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    />
-                  )}
-                </Link>
+                        ? "text-gray-300 hover:text-purple-400"
+                        : "text-gray-700 hover:text-violet-600"
+                      }`}
+                  >
+                    {item.label}
+                    {location.pathname === item.key && (
+                      <motion.span
+                        layoutId="activeNavItem"
+                        className="absolute left-0 bottom-0 w-full h-0.5 bg-gradient-to-r from-violet-600 to-purple-700"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                      />
+                    )}
+                  </Link>
+                )}
               </motion.div>
             ))}
+          </div>
 
+          {/* Desktop Menu - Auth & Theme (Right Aligned) */}
+          <div className="hidden md:flex items-center space-x-4">
             {/* Auth Buttons */}
             {user ? (
               <Dropdown menu={{ items: userItems }} placement="bottomRight">
@@ -128,26 +193,24 @@ const Navbar: React.FC = () => {
                     <Avatar
                       size="default"
                       src={user.image}
-                      className={`transition-all ${
-                        isDarkMode
-                          ? "bg-purple-600 hover:bg-purple-500"
-                          : "bg-violet-500 hover:bg-violet-400"
-                      }`}
+                      className={`transition-all ${isDarkMode
+                        ? "bg-purple-600 hover:bg-purple-500"
+                        : "bg-violet-500 hover:bg-violet-400"
+                        }`}
                       icon={!user.image && <UserOutlined />}
                     />
                   </Space>
                 </motion.div>
               </Dropdown>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/login"
-                    className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
-                      isDarkMode
-                        ? "text-purple-300 hover:text-white hover:bg-purple-500/20 border border-purple-500/50"
-                        : "text-violet-600 hover:text-white hover:bg-violet-500 border border-violet-300"
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg font-medium text-sm transition-all flex items-center gap-1 ${isDarkMode
+                      ? "text-purple-300 hover:text-white hover:bg-purple-500/20 border border-purple-500/50"
+                      : "text-violet-600 hover:text-white hover:bg-violet-500 border border-violet-300"
+                      }`}
                   >
                     <LoginOutlined /> Login
                   </Link>
@@ -155,7 +218,7 @@ const Navbar: React.FC = () => {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/register"
-                    className="px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-700 text-white hover:from-violet-500 hover:to-purple-600"
+                    className="px-3 py-1.5 rounded-lg font-medium text-sm transition-all flex items-center gap-1 bg-gradient-to-r from-violet-600 to-purple-700 text-white hover:from-violet-500 hover:to-purple-600"
                   >
                     <FormOutlined /> Register
                   </Link>
@@ -193,11 +256,10 @@ const Navbar: React.FC = () => {
                     <Avatar
                       size="default"
                       src={user.image}
-                      className={`transition-all ${
-                        isDarkMode
-                          ? "bg-purple-600 hover:bg-purple-500"
-                          : "bg-violet-500 hover:bg-violet-400"
-                      }`}
+                      className={`transition-all ${isDarkMode
+                        ? "bg-purple-600 hover:bg-purple-500"
+                        : "bg-violet-500 hover:bg-violet-400"
+                        }`}
                       icon={!user.image && <UserOutlined />}
                     />
                   </Space>
@@ -206,11 +268,10 @@ const Navbar: React.FC = () => {
             )}
             <motion.button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 rounded-lg transition-colors ${
-                isDarkMode
-                  ? "text-gray-300 hover:text-purple-400 hover:bg-purple-500/10"
-                  : "text-gray-700 hover:text-violet-600 hover:bg-violet-100/50"
-              }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode
+                ? "text-gray-300 hover:text-purple-400 hover:bg-purple-500/10"
+                : "text-gray-700 hover:text-violet-600 hover:bg-violet-100/50"
+                }`}
             >
               {isMobileMenuOpen ? <CloseOutlined /> : <MenuOutlined />}
             </motion.button>
@@ -225,35 +286,54 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className={`md:hidden overflow-hidden ${
-              isDarkMode
-                ? "bg-[#1A0033]/95 backdrop-blur-xl border-t border-purple-500/30"
-                : "bg-white/95 backdrop-blur-xl border-t border-purple-200/30"
-            }`}
+            className={`md:hidden overflow-hidden ${isDarkMode
+              ? "bg-[#1A0033]/95 backdrop-blur-xl border-t border-purple-500/30"
+              : "bg-white/95 backdrop-blur-xl border-t border-purple-200/30"
+              }`}
           >
             <div className="px-4 py-6 space-y-4">
               {menuItems.map((item) => (
-                <motion.div
-                  key={item.key}
-                  whileHover={{ x: 10 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link
-                    to={item.key}
-                    className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                      location.pathname === item.key
-                        ? isDarkMode
-                          ? "text-purple-400 bg-purple-500/10"
-                          : "text-violet-600 bg-violet-100/50"
-                        : isDarkMode
-                        ? "text-gray-300 hover:text-purple-400 hover:bg-purple-500/10"
-                        : "text-gray-700 hover:text-violet-600 hover:bg-violet-100/50"
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                </motion.div>
+                <div key={item.key}>
+                  {item.key === 'programs' ? (
+                    <div className="space-y-1">
+                      <div className={`px-4 py-2 font-semibold ${isDarkMode ? "text-purple-300" : "text-violet-700"}`}>
+                        {item.label}
+                      </div>
+                      <div className="pl-8 space-y-1 border-l-2 border-gray-600 ml-4">
+                        {item.children?.map(sub => (
+                          <Link
+                            key={sub.key}
+                            to={sub.key}
+                            className={`block py-2 px-2 text-sm rounded transition-colors ${isDarkMode ? "text-gray-400 hover:text-white" : "text-gray-600 hover:text-violet-600"}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            {sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <motion.div
+                      whileHover={{ x: 10 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to={item.key}
+                        className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 ${location.pathname === item.key
+                          ? isDarkMode
+                            ? "text-purple-400 bg-purple-500/10"
+                            : "text-violet-600 bg-violet-100/50"
+                          : isDarkMode
+                            ? "text-gray-300 hover:text-purple-400 hover:bg-purple-500/10"
+                            : "text-gray-700 hover:text-violet-600 hover:bg-violet-100/50"
+                          }`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  )}
+                </div>
               ))}
 
               {!user && (
@@ -261,11 +341,10 @@ const Navbar: React.FC = () => {
                   <motion.div whileHover={{ x: 10 }} whileTap={{ scale: 0.98 }}>
                     <Link
                       to="/login"
-                      className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${
-                        isDarkMode
-                          ? "text-purple-300 hover:text-white hover:bg-purple-500/20 border border-purple-500/50"
-                          : "text-violet-600 hover:text-white hover:bg-violet-500 border border-violet-300"
-                      }`}
+                      className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 ${isDarkMode
+                        ? "text-purple-300 hover:text-white hover:bg-purple-500/20 border border-purple-500/50"
+                        : "text-violet-600 hover:text-white hover:bg-violet-500 border border-violet-300"
+                        }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       <LoginOutlined /> Login
@@ -286,7 +365,7 @@ const Navbar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </motion.nav >
   );
 };
 

@@ -3,24 +3,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Phone, MapPin, Briefcase, FileText, Loader2, Shield } from "lucide-react";
 import { useTheme } from '../context/ThemeContext'; // Adjusted import path
 
+import api from "../api/axios";
+
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useTheme(); // Use the theme hook here!
-  
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    password: "",
     phone: "",
     placeCity: "",
     qualification: "",
     selectProgramme: "",
     resumeFile: null as File | null,
   });
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({
     fullName: '',
     email: '',
+    password: '',
     phone: '',
     qualification: '',
     selectProgramme: '',
@@ -64,7 +68,7 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({
-      fullName: '', email: '', phone: '', qualification: '', selectProgramme: '', resumeFile: '', general: ''
+      fullName: '', email: '', password: '', phone: '', qualification: '', selectProgramme: '', resumeFile: '', general: ''
     });
 
     let hasError = false;
@@ -72,6 +76,7 @@ const Signup: React.FC = () => {
 
     if (!formData.fullName) { newErrors.fullName = "Full Name is required."; hasError = true; }
     if (!formData.email) { newErrors.email = "Email is required."; hasError = true; }
+    if (!formData.password) { newErrors.password = "Password is required."; hasError = true; }
     if (!formData.phone) { newErrors.phone = "Phone number is required."; hasError = true; }
     if (!formData.qualification) { newErrors.qualification = "Qualification is required."; hasError = true; }
     if (!formData.selectProgramme) { newErrors.selectProgramme = "Programme selection is required."; hasError = true; }
@@ -84,36 +89,59 @@ const Signup: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Simulate API call for registration
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log("Registration successful", formData);
-      navigate("/success"); // Navigate to a success page
-    } catch {
-      setErrors(prev => ({ ...prev, general: "Registration failed. Please try again." }));
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (formData[key as keyof typeof formData]) {
+          data.append(key, formData[key as keyof typeof formData] as any);
+        }
+      });
+
+      // Import api locally if not at top, or assume it's imported
+      // Need to import api at top
+
+      const response = await api.post("/auth/register", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Registration successful", response.data);
+      // login user automatically or redirect to login?
+      // navigate("/login");
+      // Actually login usually returns token, so could login directly.
+      // But let's navigate to login for now or use the token directly if available.
+      // The backend returns { token, user }.
+
+      // We should probably login immediately if using AuthContext
+      // But let's just redirect to login for simplicity or success page
+      // navigate("/login");
+
+      // Let's use the login function from context if available, or just navigate
+      navigate("/login");
+
+    } catch (err: any) {
+      console.error(err);
+      setErrors(prev => ({ ...prev, general: err.response?.data?.message || "Registration failed. Please try again." }));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={`min-h-screen flex justify-center px-4 py-20 relative overflow-hidden ${
-      isDarkMode
-        ? 'bg-gradient-to-b from-[#1A0033] to-[#2D1B69]'
-        : 'bg-gradient-to-b from-gray-50 to-white'
-    }`}>
+    <div className={`min-h-screen flex justify-center px-4 py-20 relative overflow-hidden ${isDarkMode
+      ? 'bg-gradient-to-b from-[#1A0033] to-[#2D1B69]'
+      : 'bg-gradient-to-b from-gray-50 to-white'
+      }`}>
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
         <div className="absolute top-40 right-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
         <div className="absolute bottom-20 left-20 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-4000"></div>
       </div>
-      
+
       {/* Signup card container */}
-      <div className={`relative z-10 p-8 rounded-3xl shadow-2xl w-full max-w-md border ${
-        isDarkMode
-          ? 'bg-gray-900/95 dark:border-white/20' // Apply dark background and border for dark mode
-          : 'bg-white/95 border-gray-200' // Apply light background and border for light mode
-      } backdrop-blur-sm`}>
+      <div className={`relative z-10 p-8 rounded-3xl shadow-2xl w-full max-w-md border ${isDarkMode
+        ? 'bg-gray-900/95 dark:border-white/20' // Apply dark background and border for dark mode
+        : 'bg-white/95 border-gray-200' // Apply light background and border for light mode
+        } backdrop-blur-sm`}>
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
             <Shield className="w-8 h-8 text-white" />
@@ -142,9 +170,8 @@ const Signup: React.FC = () => {
                 placeholder="Enter your full name"
                 value={formData.fullName}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                } ${errors.fullName ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.fullName ? 'border-red-500' : ''}`}
                 required
               />
             </div>
@@ -162,13 +189,31 @@ const Signup: React.FC = () => {
                 placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                } ${errors.email ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.email ? 'border-red-500' : ''}`}
                 required
               />
             </div>
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Password</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.password ? 'border-red-500' : ''}`}
+                required
+              />
+            </div>
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
           {/* Phone */}
@@ -182,9 +227,8 @@ const Signup: React.FC = () => {
                 placeholder="Mobile number (10-digit)"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                } ${errors.phone ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.phone ? 'border-red-500' : ''}`}
                 required
               />
             </div>
@@ -202,9 +246,8 @@ const Signup: React.FC = () => {
                 placeholder="e.g., Chennai"
                 value={formData.placeCity}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                }`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  }`}
               />
             </div>
           </div>
@@ -218,9 +261,8 @@ const Signup: React.FC = () => {
                 name="qualification"
                 value={formData.qualification}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                } ${errors.qualification ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.qualification ? 'border-red-500' : ''}`}
                 required
               >
                 {qualifications.map(option => (
@@ -232,7 +274,7 @@ const Signup: React.FC = () => {
             </div>
             {errors.qualification && <p className="text-red-500 text-sm mt-1">{errors.qualification}</p>}
           </div>
-          
+
           {/* Select Programme (Dropdown) */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Select Internship Programme</label>
@@ -242,9 +284,8 @@ const Signup: React.FC = () => {
                 name="selectProgramme"
                 value={formData.selectProgramme}
                 onChange={handleChange}
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                  isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
-                } ${errors.selectProgramme ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${isDarkMode ? 'bg-gray-800 text-white border-gray-700' : 'bg-white text-gray-900 border-gray-300'
+                  } ${errors.selectProgramme ? 'border-red-500' : ''}`}
                 required
               >
                 {programmes.map(option => (
@@ -267,11 +308,10 @@ const Signup: React.FC = () => {
                 name="resumeFile"
                 onChange={handleFileChange}
                 accept=".pdf,.docx"
-                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold ${
-                  isDarkMode 
-                    ? 'bg-gray-800 text-white border-gray-700 file:bg-purple-600 file:text-white' 
-                    : 'bg-white text-gray-900 border-gray-300 file:bg-purple-50 file:text-purple-700'
-                } transition-all ${errors.resumeFile ? 'border-red-500' : ''}`}
+                className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold ${isDarkMode
+                  ? 'bg-gray-800 text-white border-gray-700 file:bg-purple-600 file:text-white'
+                  : 'bg-white text-gray-900 border-gray-300 file:bg-purple-50 file:text-purple-700'
+                  } transition-all ${errors.resumeFile ? 'border-red-500' : ''}`}
                 required
               />
             </div>

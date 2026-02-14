@@ -13,12 +13,20 @@ import AboutSection from './components/AboutSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import Login from './components/Login';
-import Signup from './components/Signup'; 
+import Signup from './components/Signup';
 import ReasonsSection from './components/ReasonSection';
-import MockUp from './components/MockUp'; 
+import MockUp from './components/MockUp';
 import FeaturesSection from './components/FeaturesSection';
-import StudentProfile from './components/StudentProfile.tsx'; // Assuming src/components
-import Profile from './pages/Profile'; // Assuming src/pages
+import StudentProfile from './components/StudentProfile.tsx';
+import Profile from './pages/Profile';
+import Certificates from './pages/Certificates';
+import Internships from './pages/Internships';
+import ProjectHub from './pages/ProjectHub';
+import Placement from './pages/Placement';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminJobs from './pages/admin/AdminJobs';
+
 const AppContent: React.FC = () => {
   const { isDarkMode } = useTheme();
   return (
@@ -34,11 +42,10 @@ const AppContent: React.FC = () => {
       }}
     >
       <div
-        className={`min-h-screen transition-colors duration-500 ${
-          isDarkMode
-            ? 'bg-gradient-to-br from-[#1A0033] via-[#2D1B69] to-[#1A0033]'
-            : 'bg-gradient-to-br from-violet-50 via-purple-50 to-white'
-        }`}
+        className={`min-h-screen transition-colors duration-500 ${isDarkMode
+          ? 'bg-gradient-to-br from-[#1A0033] via-[#2D1B69] to-[#1A0033]'
+          : 'bg-gradient-to-br from-violet-50 via-purple-50 to-white'
+          }`}
       >
         <Navbar />
 
@@ -54,7 +61,7 @@ const AppContent: React.FC = () => {
                   <WhyChooseUs />
                   <TrendingCourses />
                   <ReasonsSection />
-                  <FeaturesSection/>
+                  <FeaturesSection />
                   <Testimonials />
                   <Footer />
                 </>
@@ -135,11 +142,23 @@ const AppContent: React.FC = () => {
               path="/mock"
               element={
                 <>
-                  <MockUp /> 
+                  <MockUp />
                   <Footer />
                 </>
               }
             />
+
+            {/* Specialized Tracks */}
+            <Route path="/certificates" element={<><Certificates /><Footer /></>} />
+            <Route path="/internships" element={<><Internships /><Footer /></>} />
+            <Route path="/projects" element={<><ProjectHub /><Footer /></>} />
+            <Route path="/placement" element={<><Placement /><Footer /></>} />
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="jobs" element={<AdminJobs />} />
+            </Route>
 
             {/* Existing dynamic route for Student Profile */}
             <Route

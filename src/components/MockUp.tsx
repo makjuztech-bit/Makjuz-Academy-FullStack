@@ -194,8 +194,8 @@ const MockUp: React.FC = () => {
                 transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -5 }}
                 className={`p-6 rounded-2xl backdrop-blur-xl transition-all duration-300 ${isDarkMode
-                    ? 'bg-white/5 border border-purple-500/20'
-                    : 'bg-white/80 border border-violet-200/50 shadow-xl'
+                  ? 'bg-white/5 border border-purple-500/20'
+                  : 'bg-white/80 border border-violet-200/50 shadow-xl'
                   }`}
               >
                 <stat.icon
@@ -254,8 +254,8 @@ const MockUp: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className={`px-8 py-4 rounded-2xl font-semibold text-lg backdrop-blur-xl transition-all duration-300 border ${isDarkMode
-                  ? "bg-white/5 border-purple-500/30 hover:bg-white/10 hover:border-purple-400/50 text-gray-200"
-                  : "bg-white/70 border-violet-200/70 hover:bg-white/90 hover:border-violet-300/80 text-gray-700 shadow-xl"
+                ? "bg-white/5 border-purple-500/30 hover:bg-white/10 hover:border-purple-400/50 text-gray-200"
+                : "bg-white/70 border-violet-200/70 hover:bg-white/90 hover:border-violet-300/80 text-gray-700 shadow-xl"
                 }`}
             >
               🚀 Start free with Google
@@ -348,8 +348,8 @@ const MockUp: React.FC = () => {
   return (
     <div
       className={`flex min-h-screen relative overflow-hidden transition-colors duration-500 ${isDarkMode
-          ? "bg-gradient-to-br from-[#0F0728] via-[#1A0033] to-[#2D1B69] text-gray-100"
-          : "bg-gradient-to-br from-slate-50 via-white to-violet-50 text-gray-900"
+        ? "bg-gradient-to-br from-[#0F0728] via-[#1A0033] to-[#2D1B69] text-gray-100"
+        : "bg-gradient-to-br from-slate-50 via-white to-violet-50 text-gray-900"
         }`}
     >
       {/* Animated Background Elements */}
@@ -359,8 +359,8 @@ const MockUp: React.FC = () => {
           <motion.div
             key={i}
             className={`absolute rounded-full blur-3xl ${isDarkMode
-                ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20'
-                : 'bg-gradient-to-r from-violet-300/30 to-purple-300/30'
+              ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20'
+              : 'bg-gradient-to-r from-violet-300/30 to-purple-300/30'
               }`}
             style={{
               width: Math.random() * 300 + 100,
@@ -411,8 +411,8 @@ const MockUp: React.FC = () => {
         animate={{ width: isOpen ? 320 : 80 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`relative z-10 backdrop-blur-2xl border-r transition-all duration-300 ${isDarkMode
-            ? "bg-black/20 border-purple-500/20"
-            : "bg-white/70 border-violet-200/50"
+          ? "bg-black/20 border-purple-500/20"
+          : "bg-white/70 border-violet-200/50"
           }`}
       >
         {/* Sidebar Header */}
@@ -448,8 +448,8 @@ const MockUp: React.FC = () => {
             whileTap={{ scale: 0.9 }}
             onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
             className={`p-2 rounded-lg transition-colors ${isDarkMode
-                ? 'hover:bg-purple-500/20 text-purple-300'
-                : 'hover:bg-violet-100 text-violet-600'
+              ? 'hover:bg-purple-500/20 text-purple-300'
+              : 'hover:bg-violet-100 text-violet-600'
               }`}
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
@@ -553,8 +553,10 @@ const MockUp: React.FC = () => {
       </motion.aside>
 
       {/* Enhanced Main Content */}
-      <main className="flex-1 flex flex-col justify-center items-center px-4 md:px-8 relative z-10 overflow-y-auto">
-        {renderContent()}
+      <main className="flex-1 flex flex-col px-4 md:px-8 relative z-10 overflow-y-auto text-center">
+        <div className="flex-1 flex flex-col justify-center w-full max-w-7xl mx-auto py-12">
+          {renderContent()}
+        </div>
       </main>
     </div>
   );

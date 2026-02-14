@@ -1,26 +1,32 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ClipboardList, Calendar, Briefcase } from "lucide-react";
+import { ClipboardList, Calendar, Briefcase, MessageCircle } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 
 const features = [
   {
     icon: <Briefcase className="w-8 h-8 text-purple-400" />,
-    title: "Career Support",
+    title: "Premium Internships",
     description:
-      "Unlock your potential with our dedicated career support, guiding you from learning to landing your dream job.",
+      "Access exclusive internship opportunities with top tech companies. Gain real-world experience and get hired faster.",
   },
   {
     icon: <ClipboardList className="w-8 h-8 text-purple-400" />,
-    title: "Live Projects",
+    title: "Project Mentorship",
     description:
-      "Our courses are designed to bridge the gap between theory and practice. Our LIVE Projects allow students to work on real-world scenarios under the guidance of industry experts.",
+      "Struggling with your final year project? Get access to premium templates, documentation, and 1-on-1 expert guidance.",
   },
   {
     icon: <Calendar className="w-8 h-8 text-purple-400" />,
-    title: "Flexibility",
+    title: "Placement Success",
     description:
-      "We understand that flexibility is key to accommodating your busy schedule. Whether you prefer to learn in-person or online, we offer flexible learning options to suit your needs.",
+      "From AI-powered resume building to mock interviews with industry veterans, we prepare you to crack any interview.",
+  },
+  {
+    icon: <MessageCircle className="w-8 h-8 text-purple-400" />,
+    title: "Soft Skills Training",
+    description:
+      "Master workplace communication, leadership, and emotional intelligence. Stand out in any interview.",
   },
 ];
 
@@ -64,7 +70,7 @@ const FeaturesSection: React.FC = () => {
         </h2>
 
         {/* Feature cards */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {features.map((feature, i) => (
             <motion.div
               key={feature.title}

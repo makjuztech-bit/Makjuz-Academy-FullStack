@@ -5,7 +5,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 
 export interface Course {
-  id: number;
+  _id: string; // MongoDB uses _id
+  id?: string | number; // For backward compatibility if needed, or optional
   title: string;
   description: string;
   duration: string;
@@ -38,11 +39,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={hoverAnim}
-      className={`group relative overflow-hidden rounded-2xl transition-all duration-500 ${
-        isDarkMode
-          ? "bg-white/5 backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/50"
-          : "bg-white/70 backdrop-blur-xl border border-violet-200/50 hover:border-violet-300/70"
-      }`}
+      className={`group relative overflow-hidden rounded-2xl transition-all duration-500 ${isDarkMode
+        ? "bg-white/5 backdrop-blur-xl border border-purple-500/20 hover:border-purple-400/50"
+        : "bg-white/70 backdrop-blur-xl border border-violet-200/50 hover:border-violet-300/70"
+        }`}
       style={{
         transform: "perspective(1000px)",
         boxShadow: isDarkMode
@@ -52,11 +52,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
     >
       {/* Hover Glow */}
       <div
-        className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-          isDarkMode
-            ? "bg-gradient-to-br from-purple-500/10 to-violet-500/10"
-            : "bg-gradient-to-br from-violet-100/50 to-purple-100/50"
-        }`}
+        className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isDarkMode
+          ? "bg-gradient-to-br from-purple-500/10 to-violet-500/10"
+          : "bg-gradient-to-br from-violet-100/50 to-purple-100/50"
+          }`}
       />
 
       {/* Course Image */}
@@ -72,17 +71,15 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
       {/* Course Content */}
       <div className="p-6 relative z-10">
         <h3
-          className={`text-xl font-bold mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-violet-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all duration-300 ${
-            isDarkMode ? "text-white" : "text-gray-900"
-          }`}
+          className={`text-xl font-bold mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-violet-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all duration-300 ${isDarkMode ? "text-white" : "text-gray-900"
+            }`}
         >
           {course.title}
         </h3>
-        
+
         <p
-          className={`text-sm mb-4 line-clamp-2 ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          }`}
+          className={`text-sm mb-4 line-clamp-2 ${isDarkMode ? "text-gray-300" : "text-gray-600"
+            }`}
         >
           {course.description}
         </p>
@@ -92,11 +89,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
           {course.tags.map((tag, tIdx) => (
             <span
               key={tIdx}
-              className={`px-2 py-1 text-xs rounded-md ${
-                isDarkMode
-                  ? "bg-purple-500/20 text-purple-300"
-                  : "bg-violet-100 text-violet-600"
-              }`}
+              className={`px-2 py-1 text-xs rounded-md ${isDarkMode
+                ? "bg-purple-500/20 text-purple-300"
+                : "bg-violet-100 text-violet-600"
+                }`}
             >
               {tag}
             </span>
@@ -105,9 +101,8 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
 
         {/* Stats */}
         <div
-          className={`flex items-center justify-between text-sm mb-4 ${
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          }`}
+          className={`flex items-center justify-between text-sm mb-4 ${isDarkMode ? "text-gray-400" : "text-gray-500"
+            }`}
         >
           <div className="flex items-center space-x-1">
             <Clock size={14} />
@@ -133,13 +128,12 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
             type="button"
             whileHover={hoverAnim}
             whileTap={{ scale: 0.98 }}
-            onClick={() => navigate(`/courses/${course.id}`)}
+            onClick={() => navigate(`/courses/${course._id}`)}
             aria-label={`Know more about ${course.title}`}
-            className={`flex-1 py-3 rounded-xl font-semibold ${
-              isDarkMode
-                ? "bg-blue-500 text-white hover:bg-blue-400"
-                : "bg-blue-600 text-white hover:bg-blue-500"
-            }`}
+            className={`flex-1 py-3 rounded-xl font-semibold ${isDarkMode
+              ? "bg-blue-500 text-white hover:bg-blue-400"
+              : "bg-blue-600 text-white hover:bg-blue-500"
+              }`}
           >
             Know More
           </motion.button>
@@ -148,11 +142,10 @@ const CourseCard: React.FC<CourseCardProps> = ({ course, index }) => {
 
       {/* Animated Border */}
       <div
-        className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
-          isDarkMode
-            ? "shadow-[0_0_25px_rgba(186,85,211,0.3)]"
-            : "shadow-[0_0_25px_rgba(138,43,226,0.2)]"
-        }`}
+        className={`absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isDarkMode
+          ? "shadow-[0_0_25px_rgba(186,85,211,0.3)]"
+          : "shadow-[0_0_25px_rgba(138,43,226,0.2)]"
+          }`}
       />
     </motion.div>
   );

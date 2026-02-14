@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Clock, Users, Star, CheckCircle, Award, BarChart2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -6,259 +6,66 @@ import { useTheme } from '../context/ThemeContext';
 import Navbar from './Navbar';
 // @ts-ignore
 import ContactPopup from './contactPopUp';
+import api from "../api/axios";
 
 
 
 // Using the expanded course data you provided
-const allCourses = [
-    {
-        id: 1,
-        title: 'Machine Learning',
-        description: 'Master deep learning, neural networks, and AI algorithms with hands-on projects.',
-        longDescription: 'This comprehensive 12-week program takes you from fundamental ML concepts to advanced neural networks. You\'ll implement algorithms using TensorFlow/PyTorch, work on computer vision/NLP projects, and learn model deployment in production environments. Includes two capstone projects with industry-relevant datasets.',
-        duration: '12 weeks',
-        students: 2840,
-        rating: 4.9,
-        level: 'Advanced',
-        price: '₹20,000',
-        image: 'https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['Python', 'TensorFlow', 'Deep Learning', 'Neural Networks', 'AI'],
-        syllabus: [
-            { week: 1, topic: 'ML Fundamentals', content: 'Supervised vs unsupervised learning, applications' },
-            { week: 2, topic: 'Python for DS', content: 'NumPy, Pandas, Matplotlib/Seaborn' },
-            { week: 3, topic: 'Regression Models', content: 'Linear, polynomial, regularization techniques' },
-            { week: 4, topic: 'Classification', content: 'Logistic regression, SVMs, decision trees' },
-            { week: 5, topic: 'Neural Networks', content: 'Perceptrons, activation functions, backpropagation' },
-            { week: 6, topic: 'TensorFlow/Keras', content: 'Building and training models' },
-            { week: 7, topic: 'Computer Vision', content: 'CNNs, transfer learning, YOLO' },
-            { week: 8, topic: 'NLP', content: 'RNNs, LSTMs, transformer architectures' },
-            { week: 9, topic: 'Unsupervised Learning', content: 'Clustering, PCA, anomaly detection' },
-            { week: 10, topic: 'Model Deployment', content: 'Flask/Django APIs, Docker, AWS SageMaker' },
-            { week: '11-12', topic: 'Capstone Projects', content: 'End-to-end industry problems' }
-        ],
-        prerequisites: ['Python basics', 'Linear algebra fundamentals', 'Basic calculus'],
-        outcomes: [
-            'Build and optimize neural networks',
-            'Implement CV/NLP solutions',
-            'Deploy models using cloud services',
-            'Understand ML model interpretability'
-        ],
-        resources: [
-            '300+ coding exercises',
-            'Cloud GPU credits',
-            'Industry datasets',
-            'Weekly live debugging sessions'
-        ],
-        certification: 'Verified certificate with project portfolio'
-    },
-    {
-        id: 2,
-        title: 'Data Analytics',
-        description: 'Master data visualization, statistical analysis, and business intelligence tools.',
-        longDescription: 'This 8-week intensive program covers the complete data analysis pipeline from data cleaning to dashboard creation. Learn SQL, Tableau, Power BI, and statistical analysis using Python/R. Includes real-world case studies from finance, healthcare, and e-commerce domains.',
-        duration: '8 weeks',
-        students: 1920,
-        rating: 4.8,
-        level: 'Intermediate',
-        price: '₹15,000',
-        image: 'https://images.pexels.com/photos/669619/pexels-photo-669619.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['SQL', 'Tableau', 'Statistics', 'Excel', 'Power BI'],
-        syllabus: [
-            { week: 1, topic: 'Data Wrangling', content: 'Cleaning, transformation, feature engineering' },
-            { week: 2, topic: 'Exploratory Analysis', content: 'Descriptive stats, correlation analysis' },
-            { week: 3, topic: 'SQL Mastery', content: 'Complex queries, window functions, optimization' },
-            { week: 4, topic: 'Statistical Methods', content: 'Hypothesis testing, regression analysis' },
-            { week: 5, topic: 'Visualization Tools', content: 'Tableau, Power BI, Plotly' },
-            { week: 6, topic: 'Python/R for Analytics', content: 'Pandas, ggplot, statistical modeling' },
-            { week: 7, topic: 'Dashboard Design', content: 'Storytelling with data, KPI selection' },
-            { week: 8, topic: 'Capstone Project', content: 'End-to-end analysis of business dataset' }
-        ],
-        prerequisites: ['Basic spreadsheet knowledge', 'High school math'],
-        outcomes: [
-            'Clean and transform messy datasets',
-            'Create interactive dashboards',
-            'Perform statistical analysis',
-            'Extract business insights'
-        ],
-        resources: [
-            'Sample datasets from 10+ industries',
-            'Tableau Public license',
-            'SQL playground environment',
-            'Case study repository'
-        ]
-    },
-    {
-        id: 3,
-        title: 'Data Science Fundamentals',
-        description: 'Build core data science skills with Python programming and data manipulation.',
-        longDescription: '6-week foundational course covering Python programming, data analysis with Pandas, visualization with Matplotlib/Seaborn, and introductory machine learning. Perfect for beginners looking to enter the data field.',
-        duration: '6 weeks',
-        students: 3560,
-        rating: 4.7,
-        level: 'Beginner',
-        price: '₹10,000',
-        image: 'https://images.pexels.com/photos/1181359/pexels-photo-1181359.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'EDA'],
-        syllabus: [
-            { week: 1, topic: 'Python Basics', content: 'Syntax, data structures, functions' },
-            { week: 2, topic: 'NumPy/Pandas', content: 'Arrays, DataFrames, data manipulation' },
-            { week: 3, topic: 'Data Visualization', content: 'Matplotlib, Seaborn, plot types' },
-            { week: 4, topic: 'Data Cleaning', content: 'Handling missing data, outliers' },
-            { week: 5, topic: 'Intro to ML', content: 'Basic regression/classification' },
-            { week: 6, topic: 'Final Project', content: 'Complete analysis workflow' }
-        ],
-        prerequisites: ['No prior experience required'],
-        outcomes: [
-            'Write Python scripts for data tasks',
-            'Perform exploratory data analysis',
-            'Create basic visualizations',
-            'Understand ML workflow'
-        ]
-    },
-    {
-        id: 4,
-        title: 'SQL Database Management',
-        description: 'Master database design, querying, and optimization techniques.',
-        longDescription: '10-week deep dive into relational databases covering design principles, complex queries, performance tuning, and administration. Includes hands-on projects with PostgreSQL, MySQL, and SQL Server.',
-        duration: '10 weeks',
-        students: 2240,
-        rating: 4.9,
-        level: 'Advanced',
-        price: '₹20,000',
-        image: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['SQL Server', 'Data Warehousing', 'T-SQL/PL-SQL', 'Indexing', 'ETL'],
-        syllabus: [
-            { week: 1, topic: 'Database Design', content: 'Normalization, ER diagrams' },
-            { week: 2, topic: 'SQL Fundamentals', content: 'CRUD operations, joins' },
-            { week: 3, topic: 'Advanced Queries', content: 'CTEs, window functions' },
-            { week: 4, topic: 'Performance Tuning', content: 'Indexing, query plans' },
-            { week: 5, topic: 'Stored Procedures', content: 'T-SQL/PL-SQL programming' },
-            { week: 6, topic: 'Data Warehousing', content: 'Star schema, ETL processes' },
-            { week: 7, topic: 'Security', content: 'Roles, permissions, encryption' },
-            { week: 8, topic: 'Cloud Databases', content: 'Azure SQL, AWS RDS' },
-            { week: 9 - 10, topic: 'Capstone Project', content: 'Design and optimize database' }
-        ],
-        outcomes: [
-            'Design optimized database schemas',
-            'Write complex analytical queries',
-            'Tune database performance',
-            'Implement ETL pipelines'
-        ]
-    },
-    {
-        id: 5,
-        title: 'Generative AI',
-        description: 'Create intelligent content with cutting-edge generative models.',
-        longDescription: '8-week exploration of generative AI covering GANs, transformers, diffusion models, and their applications in text, image, and audio generation. Hands-on projects with Stable Diffusion, GPT, and DALL-E architectures.',
-        duration: '8 weeks',
-        students: 1680,
-        rating: 4.8,
-        level: 'Intermediate',
-        price: '₹15,000',
-        image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['Transformers', 'GANs', 'Diffusion Models', 'Prompt Engineering', 'LLMs'],
-        syllabus: [
-            { week: 1, topic: 'GenAI Fundamentals', content: 'History, applications, ethics' },
-            { week: 2, topic: 'Neural Networks Review', content: 'Architectures, training' },
-            { week: 3, topic: 'GANs', content: 'Architecture, training challenges' },
-            { week: 4, topic: 'Transformers', content: 'Attention mechanisms, GPT' },
-            { week: 5, topic: 'Diffusion Models', content: 'Stable Diffusion, DALL-E' },
-            { week: 6, topic: 'Prompt Engineering', content: 'Techniques, best practices' },
-            { week: 7, topic: 'Applications', content: 'Text, image, audio generation' },
-            { week: 8, topic: 'Capstone Project', content: 'Build custom generator' }
-        ],
-        outcomes: [
-            'Understand generative model architectures',
-            'Fine-tune pretrained models',
-            'Develop effective prompts',
-            'Ethical considerations'
-        ]
-    },
-    {
-        id: 6,
-        title: 'Cloud Engineering',
-        description: 'Master cloud computing concepts across major platforms.',
-        longDescription: '4-week intensive covering AWS, Azure, and GCP services. Learn infrastructure as code (Terraform), containerization (Docker/Kubernetes), and serverless architectures through hands-on labs.',
-        duration: '4 weeks',
-        students: 4120,
-        rating: 4.6,
-        level: 'Beginner',
-        price: '₹10,000',
-        image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=400',
-        tags: ['AWS', 'Azure', 'Terraform', 'Docker', 'Serverless'],
-        syllabus: [
-            { week: 1, topic: 'Cloud Fundamentals', content: 'IaaS/PaaS/SaaS, pricing models' },
-            { week: 2, topic: 'AWS Core Services', content: 'EC2, S3, Lambda, RDS' },
-            { week: 3, topic: 'Infrastructure as Code', content: 'Terraform, CloudFormation' },
-            { week: 4, topic: 'Containers & Orchestration', content: 'Docker, Kubernetes basics' }
-        ],
-        outcomes: [
-            'Deploy cloud infrastructure',
-            'Automate provisioning',
-            'Containerize applications',
-            'Understand cloud security'
-        ]
-    },
-    {
-        id: 7,
-        title: 'Azure Data Engineering',
-        description: 'Build and manage data pipelines on Microsoft Azure.',
-        longDescription: '4-week specialization in Azure data services including Data Factory, Databricks, Synapse Analytics, and Cosmos DB. Real-world data pipeline projects with streaming and batch processing.',
-        duration: '4 weeks',
-        students: 4120,
-        rating: 4.5,
-        level: 'Advanced',
-        price: '₹20,000',
-        image: 'https://www.springboard.com/library/static/a157b5c003f08af17664a602ba426b05/b17f8/data-engineering-on-azure.jpg',
-        tags: ['Data Factory', 'Databricks', 'Synapse', 'Data Lakes', 'Streaming'],
-        syllabus: [
-            { week: 1, topic: 'Azure Fundamentals', content: 'Resource groups, storage accounts' },
-            { week: 2, topic: 'Data Factory', content: 'Pipelines, data flows' },
-            { week: 3, topic: 'Databricks', content: 'Spark, Delta Lake' },
-            { week: 4, topic: 'Advanced Patterns', content: 'Streaming, optimization' }
-        ],
-        outcomes: [
-            'Design Azure data solutions',
-            'Implement ETL pipelines',
-            'Process streaming data',
-            'Optimize data workloads'
-        ]
-    },
-    {
-        id: 8,
-        title: 'Cloud Computing & Engineering',
-        description: 'Design and deploy scalable cloud solutions.',
-        longDescription: '6-week advanced program covering cloud architecture patterns, DevOps practices, monitoring, and cost optimization across AWS/Azure/GCP. Includes infrastructure design case studies.',
-        duration: '6 weeks',
-        students: 4120,
-        rating: 4.7,
-        level: 'Advanced',
-        price: '₹20,000',
-        image: 'https://thumbs.dreamstime.com/z/cloud-computing-engineering-innovation-concept-civil-engineer-clicks-205464391.jpg',
-        tags: ['Cloud Architecture', 'DevOps', 'Monitoring', 'Security', 'Cost Optimization'],
-        syllabus: [
-            { week: 1, topic: 'Architecture Patterns', content: 'Microservices, serverless' },
-            { week: 2, topic: 'DevOps Practices', content: 'CI/CD pipelines' },
-            { week: 3, topic: 'Monitoring', content: 'Logging, alerting' },
-            { week: 4, topic: 'Security', content: 'IAM, network security' },
-            { week: 5, topic: 'Cost Management', content: 'Optimization strategies' },
-            { week: 6, topic: 'Case Studies', content: 'Real-world architectures' }
-        ],
-        outcomes: [
-            'Design cloud-native architectures',
-            'Implement DevOps workflows',
-            'Monitor cloud environments',
-            'Optimize cloud costs'
-        ]
-    }
-];
+// Using the expanded course data you provided
+
+// Interface for Course Data
+interface CourseData {
+    _id: string;
+    id?: string | number;
+    title: string;
+    description: string;
+    longDescription: string;
+    duration: string;
+    students: number;
+    rating: number;
+    level: string;
+    price: string;
+    image: string;
+    tags: string[];
+    syllabus: { week: string | number; topic: string; content: string }[];
+    prerequisites: string[];
+    outcomes: string[];
+    resources: string[];
+    certification: string;
+}
+
 
 const CourseDetails: React.FC = () => {
     const { id } = useParams();
     const { isDarkMode } = useTheme();
     const [showContactPopup, setShowContactPopup] = useState(false);
-    const course = allCourses.find((c) => c.id === Number(id));
+    // const course = allCourses.find((c) => c.id === Number(id)); // Old logic
+    const [course, setCourse] = useState<CourseData | null>(null);
+    const [loading, setLoading] = useState(true);
     const [activeModule, setActiveModule] = useState(1);
+
+    useEffect(() => {
+        const fetchCourse = async () => {
+            try {
+                if (!id) return;
+                const res = await api.get(`/courses/${id}`);
+                setCourse(res.data);
+            } catch (error) {
+                console.error("Failed to fetch course details", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCourse();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className={`min-h-screen flex items-center justify-center text-center py-20 font-bold text-xl ${isDarkMode ? 'bg-gradient-to-br from-[#1A0033] to-[#2D1B69] text-white' : 'bg-gradient-to-br from-gray-50 to-white text-gray-900'}`}>
+                Loading...
+            </div>
+        );
+    }
 
 
     if (!course) {
